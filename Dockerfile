@@ -64,7 +64,7 @@ ARG author=testVar
 MAINTAINER monk
 
 #给镜像添加一些元信息，过个以空格隔开，ARG指令声明的author在这下面这条指令的地方都可以使用亲测
-LABEL version=0.1 desc="this dockerfile is create by ${author}"${author} create_date=2019.12.20
+LABEL version=0.1 desc="this dockerfile is create by ${author}" create_date=2019.12.20
 
 #测试下变量%{author}在输出文本中是否也可以使用，经过测试不仅仅是可以使用的，并且还可以在路径中使用
 RUN echo "this docker file is create by ${author}" > /home/monk/${author}.txt
