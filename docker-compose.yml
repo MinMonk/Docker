@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+    mysql:
+        container_name: mysql
+        image: mysql:5.7
+        restart: always
+        volumes:
+            - ./mysql/data:/usr/local/mysql/data
+            - ./mysql/conf/mysqld.conf:/usr/local/mysql/mysql.conf.d/mysqld.cnf
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: AAaa1234
+            TZ: Asia/Shanghai
+        networks:
+            default:
+                ipv4_address: 192.18.0.66
+#这里需要先使用docker创建我们的自定义网络，指令如下：
+# docker network create --subnet=192.18.0.0/16 mynetwork
+networks:
+    default:
+        external:
+            name: mynetwork
