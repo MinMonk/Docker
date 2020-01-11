@@ -12,13 +12,75 @@ services:
             - 3306:3306
         environment:
             MYSQL_ROOT_PASSWORD: AAaa1234
+            MYSQL_DATABASE: esb_console_db_dev
+            MYSQL_USER: esbcms
+            MYSQL_PASSWORD: AAaa1234
             TZ: Asia/Shanghai
+            LANG: C.UTF-8
         networks:
             mynet:
                 ipv4_address: 192.18.0.66
-#这里需要先使用docker创建我们的自定义网络，指令如下：
-# docker network create --subnet=192.18.0.0/16 mynetwork
+    servicemix:
+        container_name: servicemix
+        build: ./serviceMix
+        restart: always
+        volumes: 
+            - ./serviceMix/deploy:/usr/local/apache-servicemix-6.1.0/deploy
+#            - ./serviceMix/etc:/usr/local/apache-servicemix-6.1.0/etc
+        ports: 
+            - 1099:1099
+            - 8101:8101
+            - 8181:8181
+        networks: 
+            mynet:
+                ipv4_address: 192.18.0.67
+    activemq:
+        container_name: activeMQ
+        build: ./activeMQ
+        restart: always
+        volumes: 
+            - ./activeMQ/data:/usr/local/apache-activemq-5.12.1/data
+#            - ./activeMQ/conf:/usr/local/apache-activemq-5.12.1/conf
+        ports: 
+            - 8161:8161
+            - 61616:61616
+            - 5672:5672
+            - 61613:61613
+            - 1883:1883
+            - 61614:61614
+        environment:
+            - ACTIVEMQ_ADMIN_LOGIN=admin
+            - ACTIVEMQ_ADMIN_PASSWORD=admin
+            - ACTIVEMQ_CONFIG_MINMEMORY=512
+            - ACTIVEMQ_CONFIG_MAXMEMORY=2048
+            - TZ=Asia/Shanghai
+        networks: 
+            mynet:
+                ipv4_address: 192.18.0.68
+    tomcat:
+        container_name: ESBConsole
+        build: ./tomcat
+        restart: always
+        volumes: 
+            - ./tomcat/webapps:/usr/local/tomcat/webapps
+            - ./tomcat/logs:/usr/local/tomcat/logs
+#            - ./tomcat/conf:/usr/local/tomcat/conf
+        ports: 
+            - 8080:8080
+            - 8009:8009
+        environment: 
+            LC_ALL: zh_CN.UTF-8
+        networks: 
+            mynet:
+                ipv4_address: 192.18.0.69
+        depends_on: 
+            - mysql
+            - servicemix 
+            - activemq
+
 networks:
     mynet:
         external:
             name: mynetwork
+
+
